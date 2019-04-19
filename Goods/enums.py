@@ -1,0 +1,33 @@
+BOOK_DATA= 1
+PHONE_DIGITAL = 2
+VEHICLE = 3
+BEAUTY_CLOTHES = 4
+HOBY_SPECIALITY = 5
+GENERAL_MERCHANDISE = 6
+
+GOODS_TYPE = {
+    BOOK_DATA:"书籍资料",
+    PHONE_DIGITAL:"手机数码",
+    VEHICLE:"交通工具",
+    BEAUTY_CLOTHES:"美妆服饰",
+    HOBY_SPECIALITY:"兴趣特长",
+    GENERAL_MERCHANDISE:"日用百货",
+}
+
+OFFLINE = 0
+ONLINE = 1
+
+STATUS_CHOICE = {
+    OFFLINE:'下线',
+    ONLINE:'上线',
+}
+
+PICK_UP = 0
+HAND_DELIVER = 1
+MAIL = 2
+
+TRADE_WAY = {
+    PICK_UP:'自提',
+    HAND_DELIVER:'面交',
+    MAIL:'邮寄',
+}

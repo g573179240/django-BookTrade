@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}大学城门户－详情页{% endblock title %}
+{% block topfiles %}
+<script type="text/javascript">
+    $('#add_cart').click(function(){
+        //获取商品的id和商品数量
+        var goods_id = $(this).attr('goods_id');
+        var goods_count = $('.num_show').val();
+        var csrf = $('input[name="csrfmiddlewaretoken"]').val();
+        var params = {
+            'goods_id':goods_id,
+            'goods_count':goods_count,
+            'csrfmiddlewaretoken':csrf
+        };
+
+        $.post('/cart/add',params,function(data){
+            if(data.res == 5){
+                //添加成功
+                var count = $('#show_count').html();
+                var count = parseInt(count)+parseInt(goods_count);
+                $('#show_count').html(count);
+            }else {
+                //添加失败
+                alert(data.errmsg)
+            }
+        })
+    });
+    $(function(){
+        //计算总价
+        update_total_price();
+        function update_total_price(){
+            //获取商品价格和数量
+            goods_price = $('.show_pirze').children('em').text();
+            goods_count = $('.num_show').val();
+            //计算总价
+            goods_price = parseFloat(goods_price);
+            goods_count = parseInt(goods_count);
+            total_price = goods_price*goods_count;
+            //设置商品总价
+            $('.total').children('em').text(total_price.toFixed(2)+'元')
+        };
+        //增加商品
+        $('.add').click(function(){
+            //获取商品数量
+            goods_count = $('.num_show').val();
+            //加一
+            goods_count = parseInt(goods_count)+1;
+            //重新设值
+            $('.num_show').val(goods_count);
+            update_total_price()
+        });
+        //商品减少
+        $('.minus').click(function () {
+            goods_count = $('.num_show').val();
+            goods_count = parseInt(goods_count)-1;
+            $('.num_show').val(goods_count);
+            update_total_price()
+        });
+        //手动输入
+        $('.num_show').blur(function () {
+            goods_count = $(this).val();
+            if (isNaN(goods_count) || goods_count.trim().length == 0 || parseInt(goods_count)<=0){
+                goods_count = 1
+            };
+            $('.num_show').val(parseInt(goods_count));
+            update_total_price()
+        })
+    })
+</script>
+{% endblock topfiles %}
+{% block body %}
+	<div class="navbar_con">
+        {% csrf_token %}
+		<div class="navbar clearfix">
+			<div class="subnav_con fl">
+				<h1>全部商品分类</h1>	
+				<span></span>			
+				<ul class="subnav">
+					<li><a href="#" class="python">Python</a></li>
+					<li><a href="#" class="javascript">Javascript</a></li>
+					<li><a href="#" class="algorithms">数据结构与算法</a></li>
+					<li><a href="#" class="machinelearning">机器学习</a></li>
+					<li><a href="#" class="operatingsystem">操作系统</a></li>
+					<li><a href="#" class="database">数据库</a></li>
+				</ul>
+			</div>
+			<ul class="navlist fl">
+				<li><a href="">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="">移动端书城</a></li>
+				<li class="interval">|</li>
+				<li><a href="">秒杀</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="breadcrumb">
+		<a href="#">全部分类</a>
+		<span>></span>
+		<a href="#">Python</a>
+		<span>></span>
+		<a href="#">商品详情</a>
+	</div>
+
+	<div class="book_detail_con clearfix">
+		<div class="book_detail_pic fl"><img src="{% static goods.image %}"></div>
+
+		<div class="book_detail_list fr">
+			<h3>{{ goods.title }}</h3>
+			<p>{{ goods.desc }}</p>
+			<div class="prize_bar">
+				<span class="show_pirze">¥<em>{{ goods.price }}</em></span>
+				<span class="show_unit">单  位：册</span>
+			</div>
+			<div class="book_num clearfix">
+				<div class="num_name fl">数 量：</div>
+				<div class="num_add fl">
+					<input type="text" class="num_show fl" value="1">
+					<a href="javascript:;" class="add fr">+</a>
+					<a href="javascript:;" class="minus fr">-</a>	
+				</div> 
+			</div>
+			<div class="total">总价：<em>100元</em></div>
+			<div class="operate_btn">
+                {% csrf_token %}
+				<a href="javascript:;" class="buy_btn">立即购买</a>
+				<a href="javascript:;" class="add_cart" id="{{ goods.id }}">加入购物车</a>
+			</div>
+		</div>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_book">
+				<h3>新品推荐</h3>
+				<ul>
+                    {% for goods in goods_li %}
+                    <li>
+                        <a href="{% url 'goods:detail' goods_id=goods.id %}"><img src="{% static goods.image %}"></a>
+                        <h4><a href="{% url 'goods:detail' goods_id=goods.id %}">{{ goods.title }}</a> </h4>
+                        <div class="prize">￥{{ goods.price }}</div>
+                    </li>
+                    {% endfor %}
+{#					<li>#}
+{#						<a href="#"><img src="images/book/book001.jpg"></a>#}
+{#						<h4><a href="#">Python核心编程</a></h4>#}
+{#						<div class="prize">￥3.90</div>#}
+{#					</li>#}
+{#					<li>#}
+{#						<a href="#"><img src="images/book/book002.jpg"></a>#}
+{#						<h4><a href="#">Python学习手册</a></h4>#}
+{#						<div class="prize">￥16.80</div>#}
+{#					</li>#}
+				</ul>
+			</div>
+		</div>
+
+		<div class="r_wrap fr clearfix">
+			<ul class="detail_tab clearfix">
+				<li class="active">商品介绍</li>
+				<li>评论</li>
+			</ul>
+
+			<div class="tab_content">
+				<dl>
+					<dt>商品详情：</dt>
+					<dd>《计算机程序设计艺术》系列是公认的计算机科学领域经典之作，深入阐述了程序设计理论，对计算机领域的发展有着极为深远的影响。本书是该系列的第 1 卷，讲解基本算法，其中包含了其他各卷都需用到的基本内容。本卷从基本概念开始，然后讲述信息结构，并辅以大量的习题及答案。 </dd>
+				</dl>
+			</div>
+
+		</div>
+	</div>
+{% endblock body %}
